@@ -1,0 +1,371 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/gabrielchasukjin/DS3_Hackathon/blob/main/IncomePredictoripynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "NoyoJI5Vnqde"
+      },
+      "outputs": [],
+      "source": [
+        "import numpy as np\n",
+        "import pandas as pd\n",
+        "import matplotlib.pyplot as plt"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "id": "1QP9z_s_wwLs",
+        "colab": {
+          "resources": {
+            "http://localhost:8080/nbextensions/google.colab/files.js": {
+              "data": "Ly8gQ29weXJpZ2h0IDIwMTcgR29vZ2xlIExMQwovLwovLyBMaWNlbnNlZCB1bmRlciB0aGUgQXBhY2hlIExpY2Vuc2UsIFZlcnNpb24gMi4wICh0aGUgIkxpY2Vuc2UiKTsKLy8geW91IG1heSBub3QgdXNlIHRoaXMgZmlsZSBleGNlcHQgaW4gY29tcGxpYW5jZSB3aXRoIHRoZSBMaWNlbnNlLgovLyBZb3UgbWF5IG9idGFpbiBhIGNvcHkgb2YgdGhlIExpY2Vuc2UgYXQKLy8KLy8gICAgICBodHRwOi8vd3d3LmFwYWNoZS5vcmcvbGljZW5zZXMvTElDRU5TRS0yLjAKLy8KLy8gVW5sZXNzIHJlcXVpcmVkIGJ5IGFwcGxpY2FibGUgbGF3IG9yIGFncmVlZCB0byBpbiB3cml0aW5nLCBzb2Z0d2FyZQovLyBkaXN0cmlidXRlZCB1bmRlciB0aGUgTGljZW5zZSBpcyBkaXN0cmlidXRlZCBvbiBhbiAiQVMgSVMiIEJBU0lTLAovLyBXSVRIT1VUIFdBUlJBTlRJRVMgT1IgQ09ORElUSU9OUyBPRiBBTlkgS0lORCwgZWl0aGVyIGV4cHJlc3Mgb3IgaW1wbGllZC4KLy8gU2VlIHRoZSBMaWNlbnNlIGZvciB0aGUgc3BlY2lmaWMgbGFuZ3VhZ2UgZ292ZXJuaW5nIHBlcm1pc3Npb25zIGFuZAovLyBsaW1pdGF0aW9ucyB1bmRlciB0aGUgTGljZW5zZS4KCi8qKgogKiBAZmlsZW92ZXJ2aWV3IEhlbHBlcnMgZm9yIGdvb2dsZS5jb2xhYiBQeXRob24gbW9kdWxlLgogKi8KKGZ1bmN0aW9uKHNjb3BlKSB7CmZ1bmN0aW9uIHNwYW4odGV4dCwgc3R5bGVBdHRyaWJ1dGVzID0ge30pIHsKICBjb25zdCBlbGVtZW50ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnc3BhbicpOwogIGVsZW1lbnQudGV4dENvbnRlbnQgPSB0ZXh0OwogIGZvciAoY29uc3Qga2V5IG9mIE9iamVjdC5rZXlzKHN0eWxlQXR0cmlidXRlcykpIHsKICAgIGVsZW1lbnQuc3R5bGVba2V5XSA9IHN0eWxlQXR0cmlidXRlc1trZXldOwogIH0KICByZXR1cm4gZWxlbWVudDsKfQoKLy8gTWF4IG51bWJlciBvZiBieXRlcyB3aGljaCB3aWxsIGJlIHVwbG9hZGVkIGF0IGEgdGltZS4KY29uc3QgTUFYX1BBWUxPQURfU0laRSA9IDEwMCAqIDEwMjQ7CgpmdW5jdGlvbiBfdXBsb2FkRmlsZXMoaW5wdXRJZCwgb3V0cHV0SWQpIHsKICBjb25zdCBzdGVwcyA9IHVwbG9hZEZpbGVzU3RlcChpbnB1dElkLCBvdXRwdXRJZCk7CiAgY29uc3Qgb3V0cHV0RWxlbWVudCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKG91dHB1dElkKTsKICAvLyBDYWNoZSBzdGVwcyBvbiB0aGUgb3V0cHV0RWxlbWVudCB0byBtYWtlIGl0IGF2YWlsYWJsZSBmb3IgdGhlIG5leHQgY2FsbAogIC8vIHRvIHVwbG9hZEZpbGVzQ29udGludWUgZnJvbSBQeXRob24uCiAgb3V0cHV0RWxlbWVudC5zdGVwcyA9IHN0ZXBzOwoKICByZXR1cm4gX3VwbG9hZEZpbGVzQ29udGludWUob3V0cHV0SWQpOwp9CgovLyBUaGlzIGlzIHJvdWdobHkgYW4gYXN5bmMgZ2VuZXJhdG9yIChub3Qgc3VwcG9ydGVkIGluIHRoZSBicm93c2VyIHlldCksCi8vIHdoZXJlIHRoZXJlIGFyZSBtdWx0aXBsZSBhc3luY2hyb25vdXMgc3RlcHMgYW5kIHRoZSBQeXRob24gc2lkZSBpcyBnb2luZwovLyB0byBwb2xsIGZvciBjb21wbGV0aW9uIG9mIGVhY2ggc3RlcC4KLy8gVGhpcyB1c2VzIGEgUHJvbWlzZSB0byBibG9jayB0aGUgcHl0aG9uIHNpZGUgb24gY29tcGxldGlvbiBvZiBlYWNoIHN0ZXAsCi8vIHRoZW4gcGFzc2VzIHRoZSByZXN1bHQgb2YgdGhlIHByZXZpb3VzIHN0ZXAgYXMgdGhlIGlucHV0IHRvIHRoZSBuZXh0IHN0ZXAuCmZ1bmN0aW9uIF91cGxvYWRGaWxlc0NvbnRpbnVlKG91dHB1dElkKSB7CiAgY29uc3Qgb3V0cHV0RWxlbWVudCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKG91dHB1dElkKTsKICBjb25zdCBzdGVwcyA9IG91dHB1dEVsZW1lbnQuc3RlcHM7CgogIGNvbnN0IG5leHQgPSBzdGVwcy5uZXh0KG91dHB1dEVsZW1lbnQubGFzdFByb21pc2VWYWx1ZSk7CiAgcmV0dXJuIFByb21pc2UucmVzb2x2ZShuZXh0LnZhbHVlLnByb21pc2UpLnRoZW4oKHZhbHVlKSA9PiB7CiAgICAvLyBDYWNoZSB0aGUgbGFzdCBwcm9taXNlIHZhbHVlIHRvIG1ha2UgaXQgYXZhaWxhYmxlIHRvIHRoZSBuZXh0CiAgICAvLyBzdGVwIG9mIHRoZSBnZW5lcmF0b3IuCiAgICBvdXRwdXRFbGVtZW50Lmxhc3RQcm9taXNlVmFsdWUgPSB2YWx1ZTsKICAgIHJldHVybiBuZXh0LnZhbHVlLnJlc3BvbnNlOwogIH0pOwp9CgovKioKICogR2VuZXJhdG9yIGZ1bmN0aW9uIHdoaWNoIGlzIGNhbGxlZCBiZXR3ZWVuIGVhY2ggYXN5bmMgc3RlcCBvZiB0aGUgdXBsb2FkCiAqIHByb2Nlc3MuCiAqIEBwYXJhbSB7c3RyaW5nfSBpbnB1dElkIEVsZW1lbnQgSUQgb2YgdGhlIGlucHV0IGZpbGUgcGlja2VyIGVsZW1lbnQuCiAqIEBwYXJhbSB7c3RyaW5nfSBvdXRwdXRJZCBFbGVtZW50IElEIG9mIHRoZSBvdXRwdXQgZGlzcGxheS4KICogQHJldHVybiB7IUl0ZXJhYmxlPCFPYmplY3Q+fSBJdGVyYWJsZSBvZiBuZXh0IHN0ZXBzLgogKi8KZnVuY3Rpb24qIHVwbG9hZEZpbGVzU3RlcChpbnB1dElkLCBvdXRwdXRJZCkgewogIGNvbnN0IGlucHV0RWxlbWVudCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKGlucHV0SWQpOwogIGlucHV0RWxlbWVudC5kaXNhYmxlZCA9IGZhbHNlOwoKICBjb25zdCBvdXRwdXRFbGVtZW50ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQob3V0cHV0SWQpOwogIG91dHB1dEVsZW1lbnQuaW5uZXJIVE1MID0gJyc7CgogIGNvbnN0IHBpY2tlZFByb21pc2UgPSBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgaW5wdXRFbGVtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ2NoYW5nZScsIChlKSA9PiB7CiAgICAgIHJlc29sdmUoZS50YXJnZXQuZmlsZXMpOwogICAgfSk7CiAgfSk7CgogIGNvbnN0IGNhbmNlbCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2J1dHRvbicpOwogIGlucHV0RWxlbWVudC5wYXJlbnRFbGVtZW50LmFwcGVuZENoaWxkKGNhbmNlbCk7CiAgY2FuY2VsLnRleHRDb250ZW50ID0gJ0NhbmNlbCB1cGxvYWQnOwogIGNvbnN0IGNhbmNlbFByb21pc2UgPSBuZXcgUHJvbWlzZSgocmVzb2x2ZSkgPT4gewogICAgY2FuY2VsLm9uY2xpY2sgPSAoKSA9PiB7CiAgICAgIHJlc29sdmUobnVsbCk7CiAgICB9OwogIH0pOwoKICAvLyBXYWl0IGZvciB0aGUgdXNlciB0byBwaWNrIHRoZSBmaWxlcy4KICBjb25zdCBmaWxlcyA9IHlpZWxkIHsKICAgIHByb21pc2U6IFByb21pc2UucmFjZShbcGlja2VkUHJvbWlzZSwgY2FuY2VsUHJvbWlzZV0pLAogICAgcmVzcG9uc2U6IHsKICAgICAgYWN0aW9uOiAnc3RhcnRpbmcnLAogICAgfQogIH07CgogIGNhbmNlbC5yZW1vdmUoKTsKCiAgLy8gRGlzYWJsZSB0aGUgaW5wdXQgZWxlbWVudCBzaW5jZSBmdXJ0aGVyIHBpY2tzIGFyZSBub3QgYWxsb3dlZC4KICBpbnB1dEVsZW1lbnQuZGlzYWJsZWQgPSB0cnVlOwoKICBpZiAoIWZpbGVzKSB7CiAgICByZXR1cm4gewogICAgICByZXNwb25zZTogewogICAgICAgIGFjdGlvbjogJ2NvbXBsZXRlJywKICAgICAgfQogICAgfTsKICB9CgogIGZvciAoY29uc3QgZmlsZSBvZiBmaWxlcykgewogICAgY29uc3QgbGkgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdsaScpOwogICAgbGkuYXBwZW5kKHNwYW4oZmlsZS5uYW1lLCB7Zm9udFdlaWdodDogJ2JvbGQnfSkpOwogICAgbGkuYXBwZW5kKHNwYW4oCiAgICAgICAgYCgke2ZpbGUudHlwZSB8fCAnbi9hJ30pIC0gJHtmaWxlLnNpemV9IGJ5dGVzLCBgICsKICAgICAgICBgbGFzdCBtb2RpZmllZDogJHsKICAgICAgICAgICAgZmlsZS5sYXN0TW9kaWZpZWREYXRlID8gZmlsZS5sYXN0TW9kaWZpZWREYXRlLnRvTG9jYWxlRGF0ZVN0cmluZygpIDoKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJ24vYSd9IC0gYCkpOwogICAgY29uc3QgcGVyY2VudCA9IHNwYW4oJzAlIGRvbmUnKTsKICAgIGxpLmFwcGVuZENoaWxkKHBlcmNlbnQpOwoKICAgIG91dHB1dEVsZW1lbnQuYXBwZW5kQ2hpbGQobGkpOwoKICAgIGNvbnN0IGZpbGVEYXRhUHJvbWlzZSA9IG5ldyBQcm9taXNlKChyZXNvbHZlKSA9PiB7CiAgICAgIGNvbnN0IHJlYWRlciA9IG5ldyBGaWxlUmVhZGVyKCk7CiAgICAgIHJlYWRlci5vbmxvYWQgPSAoZSkgPT4gewogICAgICAgIHJlc29sdmUoZS50YXJnZXQucmVzdWx0KTsKICAgICAgfTsKICAgICAgcmVhZGVyLnJlYWRBc0FycmF5QnVmZmVyKGZpbGUpOwogICAgfSk7CiAgICAvLyBXYWl0IGZvciB0aGUgZGF0YSB0byBiZSByZWFkeS4KICAgIGxldCBmaWxlRGF0YSA9IHlpZWxkIHsKICAgICAgcHJvbWlzZTogZmlsZURhdGFQcm9taXNlLAogICAgICByZXNwb25zZTogewogICAgICAgIGFjdGlvbjogJ2NvbnRpbnVlJywKICAgICAgfQogICAgfTsKCiAgICAvLyBVc2UgYSBjaHVua2VkIHNlbmRpbmcgdG8gYXZvaWQgbWVzc2FnZSBzaXplIGxpbWl0cy4gU2VlIGIvNjIxMTU2NjAuCiAgICBsZXQgcG9zaXRpb24gPSAwOwogICAgZG8gewogICAgICBjb25zdCBsZW5ndGggPSBNYXRoLm1pbihmaWxlRGF0YS5ieXRlTGVuZ3RoIC0gcG9zaXRpb24sIE1BWF9QQVlMT0FEX1NJWkUpOwogICAgICBjb25zdCBjaHVuayA9IG5ldyBVaW50OEFycmF5KGZpbGVEYXRhLCBwb3NpdGlvbiwgbGVuZ3RoKTsKICAgICAgcG9zaXRpb24gKz0gbGVuZ3RoOwoKICAgICAgY29uc3QgYmFzZTY0ID0gYnRvYShTdHJpbmcuZnJvbUNoYXJDb2RlLmFwcGx5KG51bGwsIGNodW5rKSk7CiAgICAgIHlpZWxkIHsKICAgICAgICByZXNwb25zZTogewogICAgICAgICAgYWN0aW9uOiAnYXBwZW5kJywKICAgICAgICAgIGZpbGU6IGZpbGUubmFtZSwKICAgICAgICAgIGRhdGE6IGJhc2U2NCwKICAgICAgICB9LAogICAgICB9OwoKICAgICAgbGV0IHBlcmNlbnREb25lID0gZmlsZURhdGEuYnl0ZUxlbmd0aCA9PT0gMCA/CiAgICAgICAgICAxMDAgOgogICAgICAgICAgTWF0aC5yb3VuZCgocG9zaXRpb24gLyBmaWxlRGF0YS5ieXRlTGVuZ3RoKSAqIDEwMCk7CiAgICAgIHBlcmNlbnQudGV4dENvbnRlbnQgPSBgJHtwZXJjZW50RG9uZX0lIGRvbmVgOwoKICAgIH0gd2hpbGUgKHBvc2l0aW9uIDwgZmlsZURhdGEuYnl0ZUxlbmd0aCk7CiAgfQoKICAvLyBBbGwgZG9uZS4KICB5aWVsZCB7CiAgICByZXNwb25zZTogewogICAgICBhY3Rpb246ICdjb21wbGV0ZScsCiAgICB9CiAgfTsKfQoKc2NvcGUuZ29vZ2xlID0gc2NvcGUuZ29vZ2xlIHx8IHt9OwpzY29wZS5nb29nbGUuY29sYWIgPSBzY29wZS5nb29nbGUuY29sYWIgfHwge307CnNjb3BlLmdvb2dsZS5jb2xhYi5fZmlsZXMgPSB7CiAgX3VwbG9hZEZpbGVzLAogIF91cGxvYWRGaWxlc0NvbnRpbnVlLAp9Owp9KShzZWxmKTsK",
+              "ok": true,
+              "headers": [
+                [
+                  "content-type",
+                  "application/javascript"
+                ]
+              ],
+              "status": 200,
+              "status_text": ""
+            }
+          },
+          "base_uri": "https://localhost:8080/",
+          "height": 74
+        },
+        "outputId": "b77877a6-d1fd-47e8-9ae8-4d76176a81a4"
+      },
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-b9511e12-a64a-4aa8-a58f-a11f97af0c27\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-b9511e12-a64a-4aa8-a58f-a11f97af0c27\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script src=\"/nbextensions/google.colab/files.js\"></script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving beginner.csv to beginner.csv\n"
+          ]
+        }
+      ],
+      "source": [
+        "\n",
+        "from google.colab import files\n",
+        "uploaded = files.upload()\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "id": "rXOzNxfhoHOc"
+      },
+      "outputs": [],
+      "source": [
+        "df = pd.read_csv(\"beginner.csv\")\n",
+        "\n",
+        "df = df.set_index(\"SERIAL\")\n",
+        "df = df.sort_values(by = \"INCWAGE\", ascending = False)\n",
+        "\n",
+        "#Clean data\n",
+        "df = df[(df.get(\"INCWAGE\") != 99999999) & (df.get(\"INCWAGE\").notnull())] "
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 5,
+      "metadata": {
+        "id": "ydqpKhi3-lTO",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "db486045-cb1a-4a32-df43-c551abe6f0ff"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/statsmodels/tools/_testing.py:19: FutureWarning: pandas.util.testing is deprecated. Use the functions in the public API at pandas.testing instead.\n",
+            "  import pandas.util.testing as tm\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[[0. 0. 0. ... 0. 0. 0.]\n",
+            " [0. 0. 1. ... 0. 0. 0.]\n",
+            " [0. 0. 0. ... 0. 0. 0.]\n",
+            " ...\n",
+            " [1. 0. 0. ... 0. 0. 1.]\n",
+            " [0. 0. 1. ... 0. 0. 1.]\n",
+            " [0. 0. 0. ... 0. 0. 0.]]\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/sklearn/preprocessing/_encoders.py:174: UserWarning: Found unknown categories in columns [3] during transform. These unknown categories will be encoded as all zeros\n",
+            "  UserWarning,\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Intercept  -12122.689755561929\n",
+            "Coeff  [ -1359.27400774  -3342.15557359  -1101.5968441   -2691.0391338\n",
+            "  -2175.37284835   -630.3592058   -1260.41837984  -1287.4245191\n",
+            "  -1388.6753709    2280.23221454   3236.63296761   4818.67391276\n",
+            "    694.10504239   -153.45059195   2084.53237015   2147.74816638\n",
+            "   1872.0402753    2386.06132885   2322.18989117   4505.56424517\n",
+            "   6748.12972636   7321.91946752  10975.94462064  24259.48584328\n",
+            "  35375.18119552  74181.33072455  59287.91496796  -8174.03680797\n",
+            "  71778.34970725    355.64693371   7513.40416229  14986.43613107\n",
+            "  19441.47672872  11736.4201985   12521.24670594  24561.12563116\n",
+            "  23981.53796981  12303.00278003  18241.16376862  16979.66870124\n",
+            "  10130.89277755  22743.43977353  21346.16088762  22329.50748576\n",
+            "  34270.93108509  26812.71434393  12113.27089982  19916.83191616\n",
+            "  26256.31757936  20085.83547473  22166.41420425  27201.9417161\n",
+            "  24620.07635078  20548.20132811  40028.74002337  21794.48533256\n",
+            "  18051.38117304  27424.32507919  29882.49338217  32583.48520444\n",
+            "  36868.37623602  39497.1029561   34018.45422975  45609.54333201\n",
+            "  44896.28271344  43394.73014462  42938.511735    51167.42617199\n",
+            "  37843.91079381  51657.94649737  46851.45812008  40624.91102586\n",
+            "  60387.83968413  51855.88684164  62281.5392477   47551.19913577\n",
+            "  33459.06297324  71647.21266282  41262.99322747  39714.39131657\n",
+            "  54641.74209864  48657.28653623  70706.05405141  54047.08754829\n",
+            "  42422.0943015   42078.31643507  12554.52935075  76599.66511409\n",
+            "  50038.57676064  58675.28000876  36615.20527855  79730.97890213\n",
+            "  46975.83698961  57205.35948587  54095.01249449  89228.78355012\n",
+            "  76909.61947161  64655.86691021  88850.73078474  78505.23123326\n",
+            "  31948.83919873  65135.15152634  51782.54519867  61218.42625804\n",
+            "  45937.27220807  77863.15230829  81318.63597556  51005.8008813\n",
+            "  33974.80709601  35796.83406483  44943.56311809  20661.9845483\n",
+            "  37407.16351476  35413.74202802 101629.62770708  11739.17080138\n",
+            "  36877.37471443  12337.43264722]\n",
+            "Mean squared error: 2438662791.46\n",
+            "MAE 20750.87695829068\n",
+            "Intercept  6.664331947714501e+16\n",
+            "Coeff  [-6.66433195e+16 -4.38195021e+16  1.94855591e+16  1.94855591e+16\n",
+            " -4.51829733e+04 -4.48263116e+04 -5.07629250e+04 -3.10948659e+03\n",
+            " -2.28238174e+16 -1.17062479e+04 -2.25658695e+04 -1.38329193e+04\n",
+            " -3.28474904e+04 -3.41762791e+04 -2.28238174e+16 -8.61288786e+16\n",
+            " -8.61288786e+16 -6.66433195e+16 -7.14743134e+03 -1.17449505e+04\n",
+            " -1.00830327e+04 -1.06892323e+04  1.89051102e+03  1.88590869e+03\n",
+            " -4.15671364e+03 -1.55369677e+03 -2.98200563e+03 -6.19794482e+02\n",
+            " -1.53980787e+03 -1.55547943e+03 -2.00816070e+03  8.74923229e+02\n",
+            "  1.02433975e+03  2.85750000e+03  3.03125000e+03  7.07850000e+03\n",
+            "  2.18160000e+04  3.24445000e+04  6.75782500e+04  6.35082500e+04]\n",
+            "Mean squared error: 1627040720.94\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/sklearn/preprocessing/_encoders.py:174: UserWarning: Found unknown categories in columns [2] during transform. These unknown categories will be encoded as all zeros\n",
+            "  UserWarning,\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "MAE 19199.106114729984\n",
+            "Intercept  58780.574825713105\n",
+            "Coeff  [ -3907.54779049  -8104.1642259    5114.75147802  -7650.7659163\n",
+            "  -8639.17002808  -5479.81422515  -3045.27297139 -10036.77544255\n",
+            "  -8969.61679541  -4738.88426904    625.43581227 -11203.3149381\n",
+            " -21878.27761588 -20878.27761588  -6553.6139116  -22878.27761588\n",
+            " -11902.29720984 -19412.80326392 -39936.50344941 -56996.31669076\n",
+            " -56348.79818679 -56185.6643576  -56696.78077319]\n",
+            "Mean squared error: 2247182741.05\n",
+            "MAE 21561.065024915446\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/sklearn/preprocessing/_encoders.py:174: UserWarning: Found unknown categories in columns [3, 7] during transform. These unknown categories will be encoded as all zeros\n",
+            "  UserWarning,\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Intercept  2.050378959121452e+16\n",
+            "Coeff  [-4.94131022e+02 -2.50818399e+03 -3.88200069e+02 -6.87338893e+02\n",
+            "  5.06773281e+02  2.22944817e+02 -1.50143952e+03 -2.01014859e+02\n",
+            "  3.70757510e+03  5.28185149e+03  3.23595533e+03  8.38372551e+03\n",
+            " -2.07217701e+03 -3.18854060e+03 -2.08290068e+03 -2.78953872e+03\n",
+            " -2.59496560e+03 -2.46043713e+03  9.66930815e+02  7.35665908e+02\n",
+            "  2.07782239e+03  2.53213600e+03  6.54444621e+03  1.87049493e+04\n",
+            "  2.99579811e+04  6.80731760e+04  5.63892320e+04 -7.46884951e+03\n",
+            "  7.06351950e+04 -5.86806662e+03 -1.79646157e+04 -1.22003419e+04\n",
+            "  3.27837144e+02 -1.32942354e+04 -1.72655270e+04 -3.04001067e+03\n",
+            "  4.83644300e+02 -1.09393131e+04 -7.60614762e+03 -8.78591616e+03\n",
+            " -1.51774282e+04 -2.39292333e+03 -4.94673680e+03 -3.88655728e+03\n",
+            "  8.63576362e+03 -5.84669488e+01 -1.68007062e+04 -4.83114472e+03\n",
+            " -9.17639956e+02 -4.41989413e+03 -6.53958334e+02  1.27795334e+03\n",
+            "  7.91057506e+01 -3.51434368e+03  1.74066354e+04 -3.12470064e+03\n",
+            " -3.31201080e+03  1.44322282e+03 -4.89529485e+03  9.53131760e+03\n",
+            "  1.48756544e+04  2.47615080e+03 -1.14812965e+04 -6.17725407e+03\n",
+            " -6.02271136e+03 -9.69049965e+03 -1.02782939e+04  6.93735366e+02\n",
+            " -2.13763619e+04  3.10716948e+03  9.09972537e+03 -9.33573845e+03\n",
+            "  1.22029338e+04  2.29140258e+03  7.34541702e+04 -3.72168557e+03\n",
+            " -1.69804403e+04  2.19972628e+04  1.17555408e+04 -9.34013254e+03\n",
+            "  1.11922315e+04 -3.97360680e+03  1.88181864e+04  7.39120822e+03\n",
+            " -6.36755071e+03 -4.72434178e+03  5.54050370e+03  2.80936670e+04\n",
+            " -6.36981622e+02  1.60236535e+04  4.20344285e+03 -1.44765364e+04\n",
+            "  2.94331659e+04  8.18634113e+03  2.46318558e+04 -2.70902410e+03\n",
+            "  1.44550380e+04  2.27866995e+04 -3.03422927e+03  4.09737010e+04\n",
+            "  1.79983188e+04 -1.60433027e+04  1.75527754e+04 -2.25398159e+04\n",
+            "  8.68254690e+03 -2.01283340e+03  4.81930953e+04  2.62984291e+04\n",
+            "  3.33813615e+04 -1.56485892e+03  6.60666209e+03 -1.63036610e+03\n",
+            " -2.70131992e+04 -1.14821407e+04  7.10344214e+03 -2.26921091e+04\n",
+            "  5.38471738e+04  5.73432553e+04 -4.03395852e+04 -3.89991256e+03\n",
+            "  1.30814568e+16 -2.05037896e+16 -1.06741196e+16  9.32438750e+15\n",
+            "  9.32438750e+15 -4.53466755e+04 -4.43131472e+04 -5.06753874e+04\n",
+            "  2.72572092e+03 -9.82967001e+15 -4.09257629e+03 -1.68430066e+04\n",
+            " -9.14622700e+03 -2.49202056e+04 -2.45643205e+04 -9.82967001e+15\n",
+            " -4.29096338e+16 -4.29096338e+16 -3.35852463e+16 -6.72637733e+03\n",
+            " -1.26026744e+04 -9.36473985e+03 -8.35425831e+03  9.92100454e+03\n",
+            " -5.77493126e+03 -1.07977648e+04 -7.39813739e+03 -2.17984477e+04\n",
+            " -3.35612406e+03 -2.23039129e+03 -2.72629301e+03  3.37228654e+02\n",
+            " -5.48603564e+03 -4.44501745e+03 -5.19419012e+03 -5.73342231e+03\n",
+            " -5.60695136e+03 -6.00481913e+03 -1.11424574e+04  7.15199427e+03\n",
+            " -1.60856750e+04 -5.35203790e+04 -6.90966636e+03  4.44395243e+03]\n",
+            "Mean squared error: 1668342665.78\n",
+            "MAE 19238.404286614834\n"
+          ]
+        }
+      ],
+      "source": [
+        "#from sklearn import linear_model\n",
+        "import statsmodels.api as sm\n",
+        "from sklearn.preprocessing import OneHotEncoder\n",
+        "from sklearn.linear_model import LinearRegression\n",
+        "from sklearn.metrics import mean_absolute_error\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "\n",
+        "\n",
+        "encoder = OneHotEncoder(drop='first', sparse=False, handle_unknown=\"ignore\")\n",
+        "\n",
+        "\n",
+        "#Model 1\n",
+        "X_train, X_test, y_train, y_test = train_test_split(df[[\"YEAR\", \"EDUC\", \"SEX\", \"UHRSWORKT\"]], df[\"INCWAGE\"])\n",
+        "\n",
+        "onehot_training = encoder.fit_transform(X_train)\n",
+        "print(onehot_training)\n",
+        "onehot_validation = encoder.transform(X_test)\n",
+        "\n",
+        "model = LinearRegression()\n",
+        "model.fit(onehot_training, y_train)\n",
+        "\n",
+        "print(\"Intercept \", model.intercept_)\n",
+        "print(\"Coeff \", model.coef_)\n",
+        "print(\"Mean squared error: %.2f\" % np.mean((model.predict(onehot_validation) - y_test) ** 2))\n",
+        "print(\"MAE \" + str(mean_absolute_error(model.predict(onehot_validation), y_test)))\n",
+        "\n",
+        "\n",
+        "#Model 2\n",
+        "X2_train, X2_test, y_train2, y_test2 = train_test_split(df[[\"EMPSTAT\", \"WKSTAT\", \"NFAMS\", \"EDUC\"]], df[\"INCWAGE\"])\n",
+        "\n",
+        "onehot_training2 = encoder.fit_transform(X2_train)\n",
+        "onehot_validation2 = encoder.transform(X2_test)\n",
+        "\n",
+        "model2 = LinearRegression()\n",
+        "model2.fit(onehot_training2, y_train2)\n",
+        "print(\"Intercept \", model2.intercept_)\n",
+        "print(\"Coeff \", model2.coef_)\n",
+        "print(\"Mean squared error: %.2f\" % np.mean((model2.predict(onehot_validation2) - y_test2) ** 2))\n",
+        "print(\"MAE \" + str(mean_absolute_error(model2.predict(onehot_validation2), y_test2)))\n",
+        "\n",
+        "\n",
+        "#Model 3\n",
+        "X3_train, X3_test, y_train3, y_test3 = train_test_split(df[[\"RACE\", \"EMPSTAT\"]], df[\"INCWAGE\"])\n",
+        "\n",
+        "onehot_training3 = encoder.fit_transform(X3_train)\n",
+        "onehot_validation3 = encoder.transform(X3_test)\n",
+        "\n",
+        "\n",
+        "model3 = LinearRegression()\n",
+        "model3.fit(onehot_training3, y_train3)\n",
+        "print(\"Intercept \", model3.intercept_)\n",
+        "print(\"Coeff \", model3.coef_)\n",
+        "\n",
+        "print(\"Mean squared error: %.2f\" % np.mean((model3.predict(onehot_validation3) - y_test3) ** 2))\n",
+        "print(\"MAE \" + str(mean_absolute_error(model3.predict(onehot_validation3), y_test3)))\n",
+        "\n",
+        "\n",
+        "#Model 4\n",
+        "X4_train, X4_test, y_train4, y_test4 = train_test_split(df[[\"YEAR\", \"EDUC\", \"SEX\", \"UHRSWORKT\", \"EMPSTAT\", \"WKSTAT\", \"NFAMS\", \"RACE\"]], df[\"INCWAGE\"])\n",
+        "\n",
+        "onehot_training4 = encoder.fit_transform(X4_train)\n",
+        "onehot_validation4 = encoder.transform(X4_test)\n",
+        "\n",
+        "model4 = LinearRegression()\n",
+        "model4.fit(onehot_training4, y_train4)\n",
+        "print(\"Intercept \", model4.intercept_)\n",
+        "print(\"Coeff \", model4.coef_)\n",
+        "print(\"Mean squared error: %.2f\" % np.mean((model4.predict(onehot_validation4) - y_test4) ** 2))\n",
+        "print(\"MAE \" + str(mean_absolute_error(model4.predict(onehot_validation4), y_test4)))\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n"
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "collapsed_sections": [],
+      "name": "DataHacks",
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
