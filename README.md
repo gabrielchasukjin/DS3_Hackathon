@@ -1,4 +1,4 @@
-# UC San Diego - Data Science Society Hackathon
+# UC San Diego - Data Science Society - Hackathon
 **Level**: Beginner Hack
 
 **Team Members:** Esther Cho (First-Year), Vanessa Hu (First-Year), Gabriel Cha (First-Year), Arman Rahman (First-Year)
