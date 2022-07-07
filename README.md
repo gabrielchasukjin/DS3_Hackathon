@@ -3,7 +3,7 @@
 
 **Team Members:** Esther Cho (First-Year), Vanessa Hu (First-Year), Gabriel Cha (First-Year), Arman Rahman (First-Year)
 
-**Tools:** Sklearn, ****Pandas**,** Tableau, Google Colab
+**Tools:** Scikit learning, Pandas, Tableau, Google Colab
 
 ---
 
